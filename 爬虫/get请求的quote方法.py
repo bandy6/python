@@ -1,4 +1,5 @@
 import  urllib.request
+import  urllib.parse
 
 #https://www.baidu.com/s?wd=%E5%91%A8%E6%9D%B0%E4%BC%A6
 #实际是https://www.baidu.com/s?wd=周杰伦
