@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# auto format code when commit using clang-format tool
+#
+
+path_ignore_file=.pre-commit.gitignore
+
+array=`git diff --cached --name-only HEAD`
+is_ignore=0
+
+function filter_path()
+{
+	local abs_path=$1
+	local abs_name=$2
+	for ignore_path in $(cat $path_ignore_file); do
+		if [[ $abs_path =~ $ignore_path ]];then
+			is_ignore=1
+		fi
+		if [[ $abs_name =~ $ignore_path ]];then
+			is_ignore=1
+		fi
+	done
+}
+
+for name in ${array}
+do
+    extension=${name##*.}
+    file_path=${name%/*}
+	file_name=${name##*/}
+    is_ignore=0
+    filter_path $file_path $file_name
+
+    if [[ ${is_ignore} == 0 ]]; then
+	    if [[ ${extension} == "c" || ${extension} == "h" || ${extension} == "cpp" || ${extension} == "java" ]];then
+	      clang-format -i ${name}
+	      if [ $? -eq 0 ]; then
+	      git add ${name}
+	    	fi
+	    fi
+    fi
+done
